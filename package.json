@@ -1,0 +1,23 @@
+{
+  "name": "tw",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "userstate": "node server.js",
+    "diff": "node diff.js",
+    "followerCheck": "node followerCheck.js",
+    "filter": "node 30dayfilter.js",
+    "url": "node url.js",
+    "serve": "serve -l 8989"
+  },
+  "dependencies": {
+    "date-fns": "^2.16.0",
+    "dayjs": "^1.8.36",
+    "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "serve": "^11.3.2"
+  }
+}

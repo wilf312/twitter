@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <input v-model="filter" />
+    <input v-model="lastUpdate" type="number" />
+    <div>{{filtered.length}}</div>
+    <ol>
+      <li v-for="(data, key) in filtered" :key="key">
+        <a :href="`https://twitter.com/${data.screen_name}`" target="_blank">{{data.screen_name}}</a>
+        <a :href="`https://twitter.com/${data.screen_name}`" target="_blank">{{data.description}}</a>
+        <!-- <pre>
+          {{JSON.stringify(data, null, 2)}}
+        </pre> -->
+      </li>
+    </ol>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    new Vue({
+      el: "#app",
+      data () {
+        return {
+          list: [],
+          filter: '',
+          lastUpdate: 0,
+          verified: false
+        }
+      },
+      async mounted () {
+        const hoge = await fetch('/out/friends.json')
+        const res = await hoge.json()
+        console.log(res)
+
+        this.list = res
+      },
+      methods: {
+        diffDay (dateStr) {
+          const lastUpdate = new Date(dateStr).getTime()
+          const now = new Date().getTime()
+
+          // diff mill seconds
+          const diff = now - lastUpdate
+
+          const day1 = 60 * 60 * 24
+
+          // format day
+          const dayDiff = Math.floor(diff / 1000 / day1)
+
+          return dayDiff
+        }
+      },
+      computed: {
+        filtered () {
+          const verifiedFilter = this.list
+          .filter(d => {
+            return d.verified === this.verified
+          })
+
+
+          if (!this.filter) {
+            return verifiedFilter
+          }
+
+          // 全文一致
+          const textFilter = this.list
+          .filter(d => {
+            return JSON.stringify(d).indexOf(this.filter) !== -1
+          })
+
+          if (this.lastUpdate === 0) {
+            return textFilter
+          }
+
+          // 最終ツイートチェック
+          return textFilter
+            .filter(d => {
+              const diff = this.diffDay(d?.status?.created_at || 0)
+              console.log(diff)
+              return diff > 30
+            })
+        }
+      }
+    })
+  </script>
+</body>
+</html>
